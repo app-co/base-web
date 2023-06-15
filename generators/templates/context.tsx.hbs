@@ -1,0 +1,73 @@
+import React, { ReactNode, createContext, useContext } from 'react'
+import { QueryObserverResult, useQuery } from '@tanstack/react-query'
+import { api } from '@/api'
+import {  } from '@/dtos'
+import { AxiosError } from 'axios'
+
+interface IContextData {
+  edit{{context}}(data: any): Promise<void>
+  createGrupo{{context}}(data: any): Promise<void>
+  deletGrupo(id: string): Promise<void>
+
+  all{{context}}: QueryObserverResult
+}
+
+type T = {
+  children: ReactNode
+}
+
+export const {{context}}Provider = createContext<IContextData>({} as IContextData)
+
+export function {{context}}Context({ children }: T) {
+  const all{{context}} = useQuery({
+    queryKey: ['all-{{context}}'],
+    queryFn: async () => {
+      const rs = await api.get('/')
+      return rs.data
+    },
+  })
+
+  const edit{{context}} = React.useCallback(async (data: any) => {
+
+    await api
+      .put('/', { })
+      .then(() => all{{context}}.refetch())
+      .catch((h) => console.log(h))
+  }, [])
+
+  const create{{context}} = React.useCallback(
+    async (data: any) => {
+      await api
+        .post('/', { })
+        .then(() => all{{context}}.refetch())
+        .catch((h) => console.log(h))
+    },
+    [],
+  )
+
+  const delet{{context}} = React.useCallback(async (id: string) => {
+    await api
+      .delete(`//${id}`)
+      .then((h) => {
+        all{{context}}.refetch()
+      })
+      .catch((h: AxiosError) => {
+        alert(`Erro - ${h.response?.data}`)
+      })
+  }, [])
+
+  return (
+    <{{context}}Provider.Provider
+      value=all{{context}}, edit{{context}}, create{{context}}, delet{{context}} 
+    >
+      {children}
+    </{{context}}Provider.Provider>
+  )
+}
+
+export function use{{context}}() {
+  const context = useContext({{context}}Provider)
+
+  return context
+}
+
